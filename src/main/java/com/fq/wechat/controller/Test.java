@@ -34,24 +34,12 @@ public class Test {
             LOGGER.error(key + " -> " + value);
         }
 
-        LOGGER.error("HTTP_RAW_POST_DATA header: " + request.getHeader("HTTP_RAW_POST_DATA"));
-
-        LOGGER.error("HTTP_RAW_POST_DATA content: " + request.getParameter("HTTP_RAW_POST_DATA"));
-
-        String[] values = request.getParameterValues("HTTP_RAW_POST_DATA");
-        if (values != null) {
-            LOGGER.error("---------------");
-            for (String value : values) {
-                LOGGER.error(value);
-            }
-            LOGGER.error("--------------");
-        }
 
         LOGGER.error("input_stream: " + CharStreams.toString(new InputStreamReader(request.getInputStream())));
 
         String echostr = request.getParameter("echostr");
         if (echostr != null && !"".equals(echostr)) {
-            response.getWriter().print(echostr);//完成相互认证
+            response.getWriter().print(echostr);
         }
     }
 }
