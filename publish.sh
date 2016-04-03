@@ -1,3 +1,12 @@
+#!/bin/bash
+
+## 定义函数
+check_result() {
+    if  [ "$1" != "0" ] ; then
+        exit -1
+    fi
+}
+
 ## 下载代码
 git pull
 
@@ -19,8 +28,3 @@ check_result $?
 cd /usr/local/tomcat80/bin/
 ./shutdown.sh
 ./startup.sh
-
-function check_result(){
-    if  [ "$1" != "0" ]
-        exit(-1)
-}
