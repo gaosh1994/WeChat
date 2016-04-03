@@ -2,20 +2,6 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.fq.wechat.dao.WeChatDAO">
 
-    <!--<resultMap id="user_grade_map" type="com.fq.client.domain.User">-->
-    <!--<id column="id" property="id"/>-->
-    <!--<result column="name" property="name"/>-->
-    <!--<result column="password" property="password"/>-->
-    <!--<association property="grade" javaType="com.fq.client.domain.Grade">-->
-    <!--<id column="g_id" property="id"/>-->
-    <!--<result column="g_college" property="college"/>-->
-    <!--<result column="g_grade" property="grade"/>-->
-    <!--</association>-->
-    <!--<collection property="choices" ofType="com.fq.client.domain.Choice"-->
-    <!--select="com.fq.core.dao.ChoiceDAO.selectChoiceByUid" column="id">-->
-    <!--</collection>-->
-    <!--</resultMap>-->
-
     <update id="updateContent">
         UPDATE wechat
         SET content = #{0}
@@ -23,6 +9,6 @@
     </update>
 
     <select id="selectContent" resultType="java.lang.String">
-        SELECT content FROM wechart WHERE id = #{0};
+        SELECT content FROM wechat WHERE id = #{0};
     </select>
 </mapper>

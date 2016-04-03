@@ -87,4 +87,10 @@ public class WeChatController {
         response.setContentType("text/xml;charset=UTF-8");
         response.getWriter().print(format);
     }
+
+    @RequestMapping(value = "/get_status.do", method = {RequestMethod.POST, RequestMethod.GET})
+    public void getStatus(HttpServletResponse response) throws IOException {
+        String status = service.getStatus();
+        response.getWriter().print(status);
+    }
 }
