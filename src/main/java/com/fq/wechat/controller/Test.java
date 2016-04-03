@@ -1,5 +1,6 @@
 package com.fq.wechat.controller;
 
+import com.google.common.io.CharStreams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -10,6 +11,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Enumeration;
 
 /**
@@ -37,14 +39,15 @@ public class Test {
         LOGGER.error("HTTP_RAW_POST_DATA content: " + request.getParameter("HTTP_RAW_POST_DATA"));
 
         String[] values = request.getParameterValues("HTTP_RAW_POST_DATA");
-        if (values != null){
+        if (values != null) {
             LOGGER.error("---------------");
-            for (String value : values){
+            for (String value : values) {
                 LOGGER.error(value);
             }
             LOGGER.error("--------------");
         }
 
+        LOGGER.error("input_stream: " + CharStreams.toString(new InputStreamReader(request.getInputStream())));
 
         String echostr = request.getParameter("echostr");
         if (echostr != null && !"".equals(echostr)) {
