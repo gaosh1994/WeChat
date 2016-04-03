@@ -71,14 +71,20 @@ public class WeChatController {
         }
 
         // 组装返回值
-
-        Element resultRoot = DocumentHelper.createElement("xml");
-        resultRoot.addElement("ToUserName").setText(root.element("FromUserName").getText());
-        resultRoot.addElement("FromUserName").setText(root.element("ToUserName").getText());
-        resultRoot.addElement("CreateTime").setText(root.element("CreateTime").getText());
-        resultRoot.addElement("MsgType").setText(root.element("MsgType").getText());
-        resultRoot.addElement("Content").setText(content);
-        String result = DocumentHelper.createDocument(resultRoot).asXML();
-        response.getOutputStream().print(result);
+        String formatter = new StringBuilder("<xml>\n")
+                .append("\t\t\t\t<ToUserName><![CDATA[%s]]></ToUserName>\n")
+                .append("\t\t\t\t<FromUserName><![CDATA[%s]]></FromUserName>\n")
+                .append("\t\t\t\t<CreateTime>%s</CreateTime>\n")
+                .append("\t\t\t\t<MsgType><![CDATA[text]]></MsgType>\n")
+                .append("\t\t\t\t<Content><![CDATA[%s]]></Content>\n")
+                .append("</xml>")
+                .toString();
+        String format = String.format(formatter,
+                root.element("FromUserName").getText(),
+                root.element("ToUserName").getText(),
+                System.currentTimeMillis(),
+                content);
+        response.setContentType("text/xml;charset=UTF-8");
+        response.getWriter().print(format);
     }
 }
