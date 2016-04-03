@@ -14,7 +14,7 @@ check_result $?
 
 ## ±àÒë&´ò°ü
 rm -rf target
-mvn package
+mvn package -Dmaven.test.skip=true
 
 check_result $?
 
