@@ -46,6 +46,15 @@
         <filter-name>encodingFilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
+    
+    <filter>
+        <filter-name>WeChat</filter-name>
+        <filter-class>com.fq.wechat.filter.WeChatFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>WeChat</filter-name>
+        <url-pattern>/wechat.do</url-pattern>
+    </filter-mapping>
 
     <welcome-file-list>
         <welcome-file>index.jsp</welcome-file>
