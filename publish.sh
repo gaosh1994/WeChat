@@ -2,7 +2,7 @@
 
 ## ¶¨Òåº¯Êý
 check_result() {
-    if  [ "$1" = "0" ] ; then
+    if  [ "$1" != "0" ] ; then
         exit -1
     fi
 }
