@@ -56,6 +56,16 @@
         <url-pattern>/wechat.do</url-pattern>
     </filter-mapping>
 
+    
+    <filter>
+        <filter-name>AccessFilter</filter-name>
+        <filter-class>com.fq.wechat.filter.AccessFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>AccessFilter</filter-name>
+        <url-pattern>/get_status.do</url-pattern>
+    </filter-mapping>
+    
     <welcome-file-list>
         <welcome-file>index.jsp</welcome-file>
     </welcome-file-list>
