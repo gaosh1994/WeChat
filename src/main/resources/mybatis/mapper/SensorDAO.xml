@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fq.wechat.dao.SensorDAO">
+
+    <update id="updateSensorContentById">
+        UPDATE sensor SET sensor_content = #{0} WHERE id = #{1};
+    </update>
+
+    <select id="selectSensorContentById" resultType="java.lang.String">
+      SELECT sensor_content FROM sensor where id = #{0}
+    </select>
+</mapper>

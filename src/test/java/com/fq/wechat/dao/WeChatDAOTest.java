@@ -1,5 +1,6 @@
 package com.fq.wechat.dao;
 
+import com.fq.wechat.TestBase;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,9 +13,7 @@ import static org.junit.Assert.*;
  * @author jifang.
  * @since 2016/4/3 15:35.
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "classpath:spring/applicationContext.xml")
-public class WeChatDAOTest {
+public class WeChatDAOTest extends TestBase{
 
     @Autowired
     private WeChatDAO dao;
