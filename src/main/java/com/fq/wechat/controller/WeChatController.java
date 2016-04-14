@@ -48,8 +48,9 @@ public class WeChatController {
     static {
         OP_CONTENT_MAP.put(CommonConstant.LIGHT_ON, "云家居即将打开您的台灯!");
         OP_CONTENT_MAP.put(CommonConstant.LIGHT_OFF, "云家居即将关闭您的台灯!");
-        OP_CONTENT_MAP.put(CommonConstant.MANUAL, new StringBuilder("您发送的消息是%s")
-                .append("---> 用户手册 <---")
+        OP_CONTENT_MAP.put(CommonConstant.MANUAL, new StringBuilder("您发送的消息是\" %s \"")
+                .append("\n")
+                .append("***> 用户手册 <***")
                 .append("1. 台灯+开 ---- 打开台灯")
                 .append("2. 台灯+关 ---- 关闭台灯")
                 .append("3. 温度 ------- 室内温度")
