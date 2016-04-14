@@ -51,10 +51,10 @@ public class WeChatController {
         OP_CONTENT_MAP.put(CommonConstant.MANUAL, new StringBuilder("您发送的消息是\" %s \"")
                 .append("\n")
                 .append("***> 用户手册 <***")
-                .append("1. 台灯+开 ---- 打开台灯")
-                .append("2. 台灯+关 ---- 关闭台灯")
-                .append("3. 温度 ------- 室内温度")
-                .append("4. 状态 ------- 台灯状态")
+                .append("1. 台灯+开 ---- 打开台灯\\n")
+                .append("2. 台灯+关 ---- 关闭台灯\\n")
+                .append("3. 温度 ------- 室内温度\\n")
+                .append("4. 状态 ------- 台灯状态\\n")
                 .toString());
 
         QR_CONTENT_MAP.put(CommonConstant.TEMPERATURE, "当前室温为%s℃");
