@@ -43,4 +43,10 @@ public class CC3200Controller {
         String status = wService.getStatus();
         response.getWriter().print(status);
     }
+
+    @RequestMapping(value = "/upload_and_get.do", method = {RequestMethod.POST, RequestMethod.GET})
+    public void uploadAndGet(SensorDO sensor, HttpServletResponse response) throws IOException {
+        sService.saveSensorContent(sensor);
+        response.getWriter().print(wService.getStatus());
+    }
 }
