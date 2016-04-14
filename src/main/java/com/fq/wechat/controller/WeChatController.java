@@ -28,7 +28,6 @@ import java.util.Map;
 @Controller
 public class WeChatController {
 
-
     private Logger LOGGER = LoggerFactory.getLogger(WeChatController.class);
 
     private static final Map<String, String> contentMap = new HashMap<String, String>();
