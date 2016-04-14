@@ -17,8 +17,12 @@ public class FollowerServiceImpl implements FollowerService {
     @Autowired
     private FollowerDAO dao;
 
-    public void addFollower(String username) {
-        dao.insertFollower(username);
+    public void addFollower(String follower) {
+        dao.insertFollower(follower);
+    }
+
+    public void removeFollower(String follower) {
+        dao.deleteFollower(follower);
     }
 
     public List<String> getAllFollower() {

@@ -8,7 +8,9 @@ import java.util.List;
  */
 public interface FollowerDAO {
 
-    void insertFollower(String username);
+    void insertFollower(String follower);
+
+    void deleteFollower(String follower);
 
     List<String> selectAllFollower();
 }

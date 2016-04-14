@@ -8,7 +8,9 @@ import java.util.List;
  */
 public interface FollowerService {
 
-    void addFollower(String username);
+    void addFollower(String follower);
+
+    void removeFollower(String follower);
 
     List<String> getAllFollower();
 }

@@ -59,27 +59,28 @@ public class WeChatController {
 
     @RequestMapping(value = "/index.do", method = {RequestMethod.POST, RequestMethod.GET})
     public void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, DocumentException {
-
-        // 讲微信消息解析成Dom树
-        Element root;
-        String xml = request.getParameter("xml");
-        if (Strings.isNullOrEmpty(xml)) {
-            root = new SAXReader().read(request.getInputStream()).getRootElement();
-        } else {
-            root = new SAXReader().read(new StringReader(xml)).getRootElement();
-        }
+        // 将微信消息解析成Dom树
+        Element root = parseDomRoot(request);
 
         String content = null;
         String msgType = root.element("MsgType").getText();
+
+        // 事件消息
         if (msgType.equals("event")) {
             String event = root.element("Event").getText();
-            // 如果有人关注公众号
+            // 关注
             if (event.equals("subscribe")) {
                 String follower = root.element("FromUserName").getText();
-                fService.addFollower(follower);
-                content = contentMap.get("NoKey");
+                content = doSubscribe(follower);
             }
-        } else if (msgType.equals("text")) {
+            // 取消关注
+            else if (event.equals("unsubscribe")) {
+                String follower = root.element("FromUserName").getText();
+                content = doUnSubscribe(follower);
+            }
+        }
+        // 文本消息
+        else if (msgType.equals("text")) {
             // 拿到微信消息组装返回content并插入数据库
             String wxMsg = root.element("Content").getText();
             LOGGER.info("--> weixin msg: {} ", wxMsg);
@@ -122,5 +123,24 @@ public class WeChatController {
         LOGGER.info("--> weixin response: {}", rspMsg);
         response.setContentType("text/xml;charset=UTF-8");
         response.getWriter().print(rspMsg);
+    }
+
+    private Element parseDomRoot(HttpServletRequest request) throws IOException, DocumentException {
+        String xml = request.getParameter("xml");
+        if (Strings.isNullOrEmpty(xml)) {
+            return new SAXReader().read(request.getInputStream()).getRootElement();
+        } else {
+            return new SAXReader().read(new StringReader(xml)).getRootElement();
+        }
+    }
+
+    private String doSubscribe(String follower) {
+        fService.addFollower(follower);
+        return contentMap.get("NoKey");
+    }
+
+    private String doUnSubscribe(String follower) {
+        fService.removeFollower(follower);
+        return "";
     }
 }

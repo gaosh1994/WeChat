@@ -22,6 +22,11 @@ public class FollowerDAOTest extends TestBase {
     }
 
     @Test
+    public void testDelete() throws Exception{
+        dao.deleteFollower("nihao");
+    }
+
+    @Test
     public void testSelectContent() throws Exception {
         List<String> list = dao.selectAllFollower();
         System.out.println(list);
