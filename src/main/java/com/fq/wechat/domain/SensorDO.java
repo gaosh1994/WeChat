@@ -8,7 +8,7 @@ import com.alibaba.fastjson.annotation.JSONField;
  */
 public class SensorDO {
 
-    @JSONField(name = "temperature")
+    @JSONField(name = "TEMPERATURE")
     private String temperature;
 
     public String getTemperature() {
