@@ -32,24 +32,40 @@ public class WeChatController {
 
     private Logger LOGGER = LoggerFactory.getLogger(WeChatController.class);
 
-    private static final Map<String, String> contentMap = new HashMap<String, String>();
+    private static final Map<String, String> OP_CONTENT_MAP = new HashMap<>();
+    private static final Map<String, String> QR_CONTENT_MAP = new HashMap<>();
+
+    private static final String formatter = new StringBuilder("<xml>\n")
+            .append("\t\t\t\t<ToUserName><![CDATA[%s]]></ToUserName>\n")
+            .append("\t\t\t\t<FromUserName><![CDATA[%s]]></FromUserName>\n")
+            .append("\t\t\t\t<CreateTime>%s</CreateTime>\n")
+            .append("\t\t\t\t<MsgType><![CDATA[text]]></MsgType>\n")
+            .append("\t\t\t\t<Content><![CDATA[%s]]></Content>\n")
+            .append("</xml>")
+            .toString();
 
     static {
-        contentMap.put("on", "云家居即将点亮LaunchPad小灯!");
-        contentMap.put("off", "云家居即将关闭LaunchPad小灯!");
-        contentMap.put("LightOn", "云家居即将打开您的台灯!");
-        contentMap.put("LightOff", "云家居即将关闭您的台灯!");
-        contentMap.put("temperature", "当前室温为%s℃");
-        contentMap.put("NoKey", new StringBuilder("********用户指南********")
+        OP_CONTENT_MAP.put("on", "云家居即将点亮LaunchPad小灯!");
+        OP_CONTENT_MAP.put("off", "云家居即将关闭LaunchPad小灯!");
+        OP_CONTENT_MAP.put("LightOn", "云家居即将打开您的台灯!");
+        OP_CONTENT_MAP.put("LightOff", "云家居即将关闭您的台灯!");
+        OP_CONTENT_MAP.put("Manual", new StringBuilder("********用户指南********")
                 .append("on--------点亮板上小灯")
                 .append("off--------关闭板上小灯")
                 .append("台灯+开----打开家中台灯")
                 .append("台灯+关----关闭家中台灯")
                 .toString());
+
+
+        QR_CONTENT_MAP.put("temperature", "当前室温为%s℃");
+        QR_CONTENT_MAP.put("on", "LaunchPad小灯已打开");
+        QR_CONTENT_MAP.put("off", "LaunchPad小灯已关闭");
+        QR_CONTENT_MAP.put("LightOn", "台灯已打开");
+        QR_CONTENT_MAP.put("LightOff", "台灯已关闭");
     }
 
     @Autowired
-    private WeChatService weChatService;
+    private WeChatService weService;
 
     @Autowired
     private SensorService sensorService;
@@ -81,46 +97,46 @@ public class WeChatController {
         }
         // 文本消息
         else if (msgType.equals("text")) {
-            // 拿到微信消息组装返回content并插入数据库
+            // 拿到微信文本消息
             String wxMsg = root.element("Content").getText();
             LOGGER.info("--> weixin msg: {} ", wxMsg);
-            if (contentMap.containsKey(wxMsg)) {
-                content = contentMap.get(wxMsg);
-                weChatService.saveStatus(wxMsg);
+
+            // 操作小灯/台灯
+            if (OP_CONTENT_MAP.containsKey(wxMsg)) {
+                content = OP_CONTENT_MAP.get(wxMsg);
+                weService.saveStatus(wxMsg);
             } else if (wxMsg.contains("台灯")) {
                 if (wxMsg.contains("开")) {
                     wxMsg = "LightOn";
-                    content = contentMap.get(wxMsg);
-                    weChatService.saveStatus(wxMsg);
+                    content = OP_CONTENT_MAP.get(wxMsg);
+                    weService.saveStatus(wxMsg);
                 } else if (wxMsg.contains("关")) {
                     wxMsg = "LightOff";
-                    content = contentMap.get(wxMsg);
-                    weChatService.saveStatus(wxMsg);
-                } else {
-                    content = contentMap.get("NoKey");
+                    content = OP_CONTENT_MAP.get(wxMsg);
+                    weService.saveStatus(wxMsg);
                 }
-            } else if (wxMsg.contains("温度")) {
-                content = String.format(contentMap.get("temperature"), sensorService.getSensorContent().getTemperature());
-            } else {
-                content = contentMap.get("NoKey");
+            }
+            // 获得温度
+            else if (wxMsg.contains("温度")) {
+                content = String.format(QR_CONTENT_MAP.get("temperature"), sensorService.getSensorContent().getTemperature());
+            }
+            // 获得台灯/小灯状态
+            else if (wxMsg.contains("状态") && wxMsg.contains("灯")) {
+                String status = weService.getStatus();
+                content = QR_CONTENT_MAP.get(status);
             }
         }
 
+        if (Strings.isNullOrEmpty(content)) {
+            content = OP_CONTENT_MAP.get("Manual");
+        }
+
         // 组装返回值
-        String formatter = new StringBuilder("<xml>\n")
-                .append("\t\t\t\t<ToUserName><![CDATA[%s]]></ToUserName>\n")
-                .append("\t\t\t\t<FromUserName><![CDATA[%s]]></FromUserName>\n")
-                .append("\t\t\t\t<CreateTime>%s</CreateTime>\n")
-                .append("\t\t\t\t<MsgType><![CDATA[text]]></MsgType>\n")
-                .append("\t\t\t\t<Content><![CDATA[%s]]></Content>\n")
-                .append("</xml>")
-                .toString();
         String rspMsg = String.format(formatter,
                 root.element("FromUserName").getText(),
                 root.element("ToUserName").getText(),
                 System.currentTimeMillis(),
                 content);
-        LOGGER.info("--> weixin response: {}", rspMsg);
         response.setContentType("text/xml;charset=UTF-8");
         response.getWriter().print(rspMsg);
     }
@@ -136,7 +152,7 @@ public class WeChatController {
 
     private String doSubscribe(String follower) {
         fService.addFollower(follower);
-        return contentMap.get("NoKey");
+        return OP_CONTENT_MAP.get("Manual");
     }
 
     private String doUnSubscribe(String follower) {
