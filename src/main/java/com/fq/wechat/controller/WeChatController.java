@@ -76,7 +76,7 @@ public class WeChatController {
     private FollowerService fService;
 
     @RequestMapping(value = "/index.do", method = {RequestMethod.POST, RequestMethod.GET})
-    public void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, DocumentException {
+    public void index(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, DocumentException {
         // 将微信消息解析成Dom树
         Element root = parseDomRoot(request);
 
@@ -104,8 +104,9 @@ public class WeChatController {
         }
         // 语音消息
         else if (msgType.equals("voice")) {
-            String wxMsg = root.element("Recognition").getText();
-            content = doOpAndQr(wxMsg);
+            String voiceMsg = root.element("Recognition").getText();
+            LOGGER.info("voice: {}", voiceMsg);
+            content = doOpAndQr(voiceMsg);
         }
 
         if (Strings.isNullOrEmpty(content)) {
