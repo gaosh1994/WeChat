@@ -48,11 +48,12 @@ public class WeChatController {
     static {
         OP_CONTENT_MAP.put(CommonConstant.LIGHT_ON, "云家居即将打开您的台灯!");
         OP_CONTENT_MAP.put(CommonConstant.LIGHT_OFF, "云家居即将关闭您的台灯!");
-        OP_CONTENT_MAP.put(CommonConstant.MANUAL, new StringBuilder("********用户指南********")
-                .append("台灯+开----打开家中台灯")
-                .append("台灯+关----关闭家中台灯")
-                .append("温度-------获得当前室内温度")
-                .append("灯+状态----获得当前台灯/小灯状态")
+        OP_CONTENT_MAP.put(CommonConstant.MANUAL, new StringBuilder("您发送的消息是%s")
+                .append("---> 用户手册 <---")
+                .append("1. 台灯+开----打开家中台灯")
+                .append("2. 台灯+关----关闭家中台灯")
+                .append("3. 温度-------获得当前室内温度")
+                .append("4. 状态----获得当前台灯/小灯状态")
                 .toString());
 
         QR_CONTENT_MAP.put(CommonConstant.TEMPERATURE, "当前室温为%s℃");
@@ -75,6 +76,7 @@ public class WeChatController {
         Element root = parseDomRoot(request);
 
         String content = null;
+        String wxMsg = "";
         String msgType = root.element("MsgType").getText();
 
         // 事件消息
@@ -93,11 +95,13 @@ public class WeChatController {
         }
         // 文本消息
         else if (msgType.equals("text")) {
-            content = doOpAndQr(root.element("Content").getText());
+            wxMsg = root.element("Content").getText();
+            content = doOpAndQr(wxMsg);
         }
         // 语音消息
         else if (msgType.equals("voice")) {
-            content = doOpAndQr(root.element("Recognition").getText());
+            wxMsg = root.element("Recognition").getText();
+            content = doOpAndQr(wxMsg);
         }
 
         if (Strings.isNullOrEmpty(content)) {
