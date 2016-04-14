@@ -4,6 +4,7 @@ import com.fq.wechat.service.FollowerService;
 import com.fq.wechat.service.SensorService;
 import com.fq.wechat.service.WeChatService;
 import com.google.common.base.Strings;
+import com.google.common.io.CharStreams;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
@@ -18,6 +19,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
@@ -146,6 +148,9 @@ public class WeChatController {
     private Element parseDomRoot(HttpServletRequest request) throws IOException, DocumentException {
         String xml = request.getParameter("xml");
         if (Strings.isNullOrEmpty(xml)) {
+            String wxMsg = CharStreams.toString(new InputStreamReader(request.getInputStream()));
+            LOGGER.error("#### --> voice", wxMsg);
+
             return new SAXReader().read(request.getInputStream()).getRootElement();
         } else {
             return new SAXReader().read(new StringReader(xml)).getRootElement();
