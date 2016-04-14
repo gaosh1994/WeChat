@@ -1,5 +1,6 @@
 package com.fq.wechat.controller;
 
+import com.fq.wechat.service.SensorService;
 import com.fq.wechat.service.WeChatService;
 import com.google.common.base.Strings;
 import org.dom4j.DocumentException;
@@ -38,6 +39,7 @@ public class WeChatController {
         contentMap.put("off", "云家居即将关闭LaunchPad小灯!");
         contentMap.put("LightOn", "云家居即将打开您的台灯!");
         contentMap.put("LightOff", "云家居即将关闭您的台灯!");
+        contentMap.put("temperature", "当前室温为%s℃");
         contentMap.put("NoKey", new StringBuilder("********用户指南********")
                 .append("on--------点亮板上小灯")
                 .append("off--------关闭板上小灯")
@@ -47,7 +49,10 @@ public class WeChatController {
     }
 
     @Autowired
-    private WeChatService service;
+    private WeChatService weChatService;
+
+    @Autowired
+    private SensorService sensorService;
 
     @RequestMapping(value = "/wechat.do", method = {RequestMethod.POST, RequestMethod.GET})
     public void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, DocumentException {
@@ -67,19 +72,21 @@ public class WeChatController {
         String content;
         if (contentMap.containsKey(wxMsg)) {
             content = contentMap.get(wxMsg);
-            service.saveStatus(wxMsg);
+            weChatService.saveStatus(wxMsg);
         } else if (wxMsg.contains("台灯")) {
             if (wxMsg.contains("开")) {
                 wxMsg = "LightOn";
                 content = contentMap.get(wxMsg);
-                service.saveStatus(wxMsg);
+                weChatService.saveStatus(wxMsg);
             } else if (wxMsg.contains("关")) {
                 wxMsg = "LightOff";
                 content = contentMap.get(wxMsg);
-                service.saveStatus(wxMsg);
+                weChatService.saveStatus(wxMsg);
             } else {
                 content = contentMap.get("NoKey");
             }
+        } else if (wxMsg.contains("温度")) {
+            content = String.format(contentMap.get("temperature"), sensorService.getSensorContent().getTemperature());
         } else {
             content = contentMap.get("NoKey");
         }
@@ -105,7 +112,7 @@ public class WeChatController {
 
     @RequestMapping(value = "/get_status.do", method = {RequestMethod.POST, RequestMethod.GET})
     public void getStatus(HttpServletResponse response) throws IOException {
-        String status = service.getStatus();
+        String status = weChatService.getStatus();
         response.getWriter().print(status);
     }
 }

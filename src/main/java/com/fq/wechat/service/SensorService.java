@@ -9,4 +9,6 @@ import com.fq.wechat.domain.SensorDO;
 public interface SensorService {
 
     void saveSensorContent(SensorDO sensor);
+
+    SensorDO getSensorContent();
 }
