@@ -149,7 +149,7 @@ public class WeChatController {
         String xml = request.getParameter("xml");
         if (Strings.isNullOrEmpty(xml)) {
             String wxMsg = CharStreams.toString(new InputStreamReader(request.getInputStream()));
-            LOGGER.error("#### --> voice", wxMsg);
+            LOGGER.error("#### --> voice{}", wxMsg);
 
             return new SAXReader().read(request.getInputStream()).getRootElement();
         } else {
