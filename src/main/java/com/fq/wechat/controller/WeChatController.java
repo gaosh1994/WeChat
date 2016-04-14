@@ -78,30 +78,30 @@ public class WeChatController {
 
         String content = null;
         String wxMsg = "";
-        String msgType = root.element("MsgType").getText();
+        String msgType = root.element(CommonConstant.MSG_TYPE).getText();
 
         // 事件消息
-        if (msgType.equals("event")) {
-            String event = root.element("Event").getText();
+        if (msgType.equals(CommonConstant.L_EVENT)) {
+            // 获得粉丝用户名
+            String follower = root.element(CommonConstant.FROM_USER_NAME).getText();
+            String event = root.element(CommonConstant.U_EVENT).getText();
             // 关注
-            if (event.equals("subscribe")) {
-                String follower = root.element("FromUserName").getText();
+            if (event.equals(CommonConstant.SUBSCRIBE)) {
                 content = doSubscribe(follower);
             }
             // 取消关注
-            else if (event.equals("unsubscribe")) {
-                String follower = root.element("FromUserName").getText();
+            else if (event.equals(CommonConstant.UN_SUBSCRIBE)) {
                 content = doUnSubscribe(follower);
             }
         }
         // 文本消息
-        else if (msgType.equals("text")) {
-            wxMsg = root.element("Content").getText();
+        else if (msgType.equals(CommonConstant.TEXT)) {
+            wxMsg = root.element(CommonConstant.CONTENT).getText();
             content = doOpAndQr(wxMsg);
         }
         // 语音消息
-        else if (msgType.equals("voice")) {
-            wxMsg = root.element("Recognition").getText();
+        else if (msgType.equals(CommonConstant.VOICE)) {
+            wxMsg = root.element(CommonConstant.RECOGNITION).getText();
             content = doOpAndQr(wxMsg);
         }
 
@@ -109,14 +109,8 @@ public class WeChatController {
             content = String.format(OP_CONTENT_MAP.get(CommonConstant.MANUAL), wxMsg);
         }
 
-        // 组装返回值
-        String rspMsg = String.format(formatter,
-                root.element("FromUserName").getText(),
-                root.element("ToUserName").getText(),
-                System.currentTimeMillis(),
-                content);
-        response.setContentType("text/xml;charset=UTF-8");
-        response.getWriter().print(rspMsg);
+        // response.setContentType("text/xml;charset=UTF-8");
+        response.getWriter().print(composeResponseData(root, content));
     }
 
     private Element parseDomRoot(HttpServletRequest request) throws IOException, DocumentException {
@@ -132,7 +126,7 @@ public class WeChatController {
 
     private String doSubscribe(String follower) {
         fService.addFollower(follower);
-        return OP_CONTENT_MAP.get("Manual");
+        return OP_CONTENT_MAP.get(CommonConstant.MANUAL);
     }
 
     private String doUnSubscribe(String follower) {
@@ -167,5 +161,14 @@ public class WeChatController {
         }
 
         return content;
+    }
+
+    // 组装返回值
+    private String composeResponseData(Element root, String content) {
+        return String.format(formatter,
+                root.element(CommonConstant.FROM_USER_NAME).getText(),
+                root.element(CommonConstant.TO_USER_NAME).getText(),
+                System.currentTimeMillis(),
+                content);
     }
 }
