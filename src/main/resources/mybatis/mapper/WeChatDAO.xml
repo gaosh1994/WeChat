@@ -2,6 +2,9 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.fq.wechat.dao.WeChatDAO">
 
+    <cache type="org.mybatis.caches.ehcache.EhcacheCache" eviction="LRU" flushInterval="60000" size="1024"
+           readOnly="true"/>
+
     <update id="updateContent">
         UPDATE wechat
         SET content = #{0}

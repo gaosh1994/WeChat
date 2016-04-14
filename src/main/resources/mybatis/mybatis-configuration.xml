@@ -3,6 +3,10 @@
         "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
 
+    <settings>
+        <setting name="cacheEnabled" value="true"/>
+    </settings>
+
     <mappers>
         <mapper resource="mybatis/mapper/WeChatDAO.xml"/>
         <mapper resource="mybatis/mapper/SensorDAO.xml"/>

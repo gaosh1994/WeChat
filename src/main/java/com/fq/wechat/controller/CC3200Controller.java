@@ -9,6 +9,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
 /**
  * @author jifang.
  * @since 2016/4/3 11:40.
@@ -24,7 +27,8 @@ public class CC3200Controller {
 
     @ResponseBody
     @RequestMapping("/sensor_status_add.do")
-    public void sensorStatusAdd(SensorDO sensor) {
+    public void sensorStatusAdd(SensorDO sensor, HttpServletResponse response) throws IOException {
         service.saveSensorContent(sensor);
+        response.getWriter().write(sensor.getTemperature());
     }
 }
