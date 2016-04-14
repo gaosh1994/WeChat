@@ -10,5 +10,6 @@
     <mappers>
         <mapper resource="mybatis/mapper/WeChatDAO.xml"/>
         <mapper resource="mybatis/mapper/SensorDAO.xml"/>
+        <mapper resource="mybatis/mapper/FollowerDAO.xml"/>
     </mappers>
 </configuration>

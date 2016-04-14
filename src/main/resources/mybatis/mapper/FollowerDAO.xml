@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fq.wechat.dao.FollowerDAO">
+
+    <cache type="org.mybatis.caches.ehcache.EhcacheCache" eviction="LRU" flushInterval="60000" size="1024"
+           readOnly="true"/>
+
+    <insert id="insertFollower">
+        INSERT into follower(user_name) VALUE (#{0});
+    </insert>
+
+    <select id="selectAllFollower" resultType="java.lang.String">
+      SELECT user_name FROM follower;
+    </select>
+</mapper>

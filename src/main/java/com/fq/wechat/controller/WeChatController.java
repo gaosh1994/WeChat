@@ -1,5 +1,6 @@
 package com.fq.wechat.controller;
 
+import com.fq.wechat.service.FollowerService;
 import com.fq.wechat.service.SensorService;
 import com.fq.wechat.service.WeChatService;
 import com.google.common.base.Strings;
@@ -26,12 +27,12 @@ import java.util.Map;
  * @since 2016/4/3 11:40.
  */
 @Controller
+@RequestMapping("/wechat")
 public class WeChatController {
 
     private Logger LOGGER = LoggerFactory.getLogger(WeChatController.class);
 
     private static final Map<String, String> contentMap = new HashMap<String, String>();
-
 
     static {
         contentMap.put("on", "云家居即将点亮LaunchPad小灯!");
@@ -53,7 +54,10 @@ public class WeChatController {
     @Autowired
     private SensorService sensorService;
 
-    @RequestMapping(value = "/wechat.do", method = {RequestMethod.POST, RequestMethod.GET})
+    @Autowired
+    private FollowerService fService;
+
+    @RequestMapping(value = "/index.do", method = {RequestMethod.POST, RequestMethod.GET})
     public void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, DocumentException {
 
         // 讲微信消息解析成Dom树
@@ -65,29 +69,40 @@ public class WeChatController {
             root = new SAXReader().read(new StringReader(xml)).getRootElement();
         }
 
-        // 拿到微信消息组装返回content并插入数据库
-        String wxMsg = root.element("Content").getText();
-        LOGGER.info("--> weixin msg: {} ", wxMsg);
-        String content;
-        if (contentMap.containsKey(wxMsg)) {
-            content = contentMap.get(wxMsg);
-            weChatService.saveStatus(wxMsg);
-        } else if (wxMsg.contains("台灯")) {
-            if (wxMsg.contains("开")) {
-                wxMsg = "LightOn";
+        String content = null;
+        String msgType = root.element("MsgType").getText();
+        if (msgType.equals("event")) {
+            String event = root.element("Event").getText();
+            // 如果有人关注公众号
+            if (event.equals("subscribe")) {
+                String follower = root.element("FromUserName").getText();
+                fService.addFollower(follower);
+                content = contentMap.get("NoKey");
+            }
+        } else if (msgType.equals("text")) {
+            // 拿到微信消息组装返回content并插入数据库
+            String wxMsg = root.element("Content").getText();
+            LOGGER.info("--> weixin msg: {} ", wxMsg);
+            if (contentMap.containsKey(wxMsg)) {
                 content = contentMap.get(wxMsg);
                 weChatService.saveStatus(wxMsg);
-            } else if (wxMsg.contains("关")) {
-                wxMsg = "LightOff";
-                content = contentMap.get(wxMsg);
-                weChatService.saveStatus(wxMsg);
+            } else if (wxMsg.contains("台灯")) {
+                if (wxMsg.contains("开")) {
+                    wxMsg = "LightOn";
+                    content = contentMap.get(wxMsg);
+                    weChatService.saveStatus(wxMsg);
+                } else if (wxMsg.contains("关")) {
+                    wxMsg = "LightOff";
+                    content = contentMap.get(wxMsg);
+                    weChatService.saveStatus(wxMsg);
+                } else {
+                    content = contentMap.get("NoKey");
+                }
+            } else if (wxMsg.contains("温度")) {
+                content = String.format(contentMap.get("temperature"), sensorService.getSensorContent().getTemperature());
             } else {
                 content = contentMap.get("NoKey");
             }
-        } else if (wxMsg.contains("温度")) {
-            content = String.format(contentMap.get("temperature"), sensorService.getSensorContent().getTemperature());
-        } else {
-            content = contentMap.get("NoKey");
         }
 
         // 组装返回值
@@ -107,11 +122,5 @@ public class WeChatController {
         LOGGER.info("--> weixin response: {}", rspMsg);
         response.setContentType("text/xml;charset=UTF-8");
         response.getWriter().print(rspMsg);
-    }
-
-    @RequestMapping(value = "/get_status.do", method = {RequestMethod.POST, RequestMethod.GET})
-    public void getStatus(HttpServletResponse response) throws IOException {
-        String status = weChatService.getStatus();
-        response.getWriter().print(status);
     }
 }
