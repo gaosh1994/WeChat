@@ -54,6 +54,8 @@ public class WeChatController {
                 .append("off--------关闭板上小灯")
                 .append("台灯+开----打开家中台灯")
                 .append("台灯+关----关闭家中台灯")
+                .append("温度-------获得当前室内温度")
+                .append("灯+状态----获得当前台灯/小灯状态")
                 .toString());
 
 
