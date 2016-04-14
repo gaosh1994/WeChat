@@ -4,7 +4,6 @@ import com.fq.wechat.service.FollowerService;
 import com.fq.wechat.service.SensorService;
 import com.fq.wechat.service.WeChatService;
 import com.google.common.base.Strings;
-import com.google.common.io.CharStreams;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
@@ -19,7 +18,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
@@ -101,34 +99,13 @@ public class WeChatController {
         }
         // 文本消息
         else if (msgType.equals("text")) {
-            // 拿到微信文本消息
             String wxMsg = root.element("Content").getText();
-            LOGGER.info("--> weixin msg: {} ", wxMsg);
-
-            // 操作小灯/台灯
-            if (OP_CONTENT_MAP.containsKey(wxMsg)) {
-                content = OP_CONTENT_MAP.get(wxMsg);
-                weService.saveStatus(wxMsg);
-            } else if (wxMsg.contains("台灯")) {
-                if (wxMsg.contains("开")) {
-                    wxMsg = "LightOn";
-                    content = OP_CONTENT_MAP.get(wxMsg);
-                    weService.saveStatus(wxMsg);
-                } else if (wxMsg.contains("关")) {
-                    wxMsg = "LightOff";
-                    content = OP_CONTENT_MAP.get(wxMsg);
-                    weService.saveStatus(wxMsg);
-                }
-            }
-            // 获得温度
-            else if (wxMsg.contains("温度")) {
-                content = String.format(QR_CONTENT_MAP.get("temperature"), sensorService.getSensorContent().getTemperature());
-            }
-            // 获得台灯/小灯状态
-            else if (wxMsg.contains("状态") && wxMsg.contains("灯")) {
-                String status = weService.getStatus();
-                content = QR_CONTENT_MAP.get(status);
-            }
+            content = doOpAndQr(wxMsg);
+        }
+        // 语音消息
+        else if (msgType.equals("voice")) {
+            String wxMsg = root.element("Recognition").getText();
+            content = doOpAndQr(wxMsg);
         }
 
         if (Strings.isNullOrEmpty(content)) {
@@ -148,9 +125,8 @@ public class WeChatController {
     private Element parseDomRoot(HttpServletRequest request) throws IOException, DocumentException {
         String xml = request.getParameter("xml");
         if (Strings.isNullOrEmpty(xml)) {
-            String wxMsg = CharStreams.toString(new InputStreamReader(request.getInputStream()));
-            LOGGER.error("#### --> voice{}", wxMsg);
-
+            //  String wxMsg = CharStreams.toString(new InputStreamReader(request.getInputStream()));
+            //  LOGGER.error("#### --> voice{}", wxMsg);
             return new SAXReader().read(request.getInputStream()).getRootElement();
         } else {
             return new SAXReader().read(new StringReader(xml)).getRootElement();
@@ -165,5 +141,37 @@ public class WeChatController {
     private String doUnSubscribe(String follower) {
         fService.removeFollower(follower);
         return "";
+    }
+
+    private String doOpAndQr(String wxMsg) {
+        LOGGER.info("--> weixin msg: {} ", wxMsg);
+
+        String content = null;
+        // 操作小灯/台灯
+        if (OP_CONTENT_MAP.containsKey(wxMsg)) {
+            content = OP_CONTENT_MAP.get(wxMsg);
+            weService.saveStatus(wxMsg);
+        } else if (wxMsg.contains("台灯")) {
+            if (wxMsg.contains("开")) {
+                wxMsg = "LightOn";
+                content = OP_CONTENT_MAP.get(wxMsg);
+                weService.saveStatus(wxMsg);
+            } else if (wxMsg.contains("关")) {
+                wxMsg = "LightOff";
+                content = OP_CONTENT_MAP.get(wxMsg);
+                weService.saveStatus(wxMsg);
+            }
+        }
+        // 获得温度
+        else if (wxMsg.contains("温度")) {
+            content = String.format(QR_CONTENT_MAP.get("temperature"), sensorService.getSensorContent().getTemperature());
+        }
+        // 获得台灯/小灯状态
+        else if (wxMsg.contains("状态") && wxMsg.contains("灯")) {
+            String status = weService.getStatus();
+            content = QR_CONTENT_MAP.get(status);
+        }
+
+        return content;
     }
 }
