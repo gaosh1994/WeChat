@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  * @author jifang.
@@ -21,6 +22,7 @@ public class CC3200Controller {
     @Autowired
     private SensorService service;
 
+    @ResponseBody
     @RequestMapping("/sensor_status_add.do")
     public void sensorStatusAdd(SensorDO sensor) {
         service.saveSensorContent(sensor);
