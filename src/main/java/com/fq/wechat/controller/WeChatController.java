@@ -50,10 +50,10 @@ public class WeChatController {
         OP_CONTENT_MAP.put(CommonConstant.LIGHT_OFF, "云家居即将关闭您的台灯!");
         OP_CONTENT_MAP.put(CommonConstant.MANUAL, new StringBuilder("您发送的消息是%s")
                 .append("---> 用户手册 <---")
-                .append("1. 台灯+开----打开家中台灯")
-                .append("2. 台灯+关----关闭家中台灯")
-                .append("3. 温度-------获得当前室内温度")
-                .append("4. 状态----获得当前台灯/小灯状态")
+                .append("1. 台灯+开 ---- 打开台灯")
+                .append("2. 台灯+关 ---- 关闭台灯")
+                .append("3. 温度 ------- 室内温度")
+                .append("4. 状态 ------- 台灯状态")
                 .toString());
 
         QR_CONTENT_MAP.put(CommonConstant.TEMPERATURE, "当前室温为%s℃");
@@ -105,7 +105,7 @@ public class WeChatController {
         }
 
         if (Strings.isNullOrEmpty(content)) {
-            content = OP_CONTENT_MAP.get(CommonConstant.MANUAL);
+            content = String.format(OP_CONTENT_MAP.get(CommonConstant.MANUAL), wxMsg);
         }
 
         // 组装返回值
