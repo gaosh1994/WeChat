@@ -31,6 +31,7 @@ public class WeChatController {
 
     private static final Map<String, String> contentMap = new HashMap<String, String>();
 
+
     static {
         contentMap.put("on", "云家居即将点亮LaunchPad小灯!");
         contentMap.put("off", "云家居即将关闭LaunchPad小灯!");
