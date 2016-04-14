@@ -53,7 +53,7 @@
     </filter>
     <filter-mapping>
         <filter-name>WeChat</filter-name>
-        <url-pattern>/wechat.do</url-pattern>
+        <url-pattern>/wechat/index.do</url-pattern>
     </filter-mapping>
     
     <welcome-file-list>
